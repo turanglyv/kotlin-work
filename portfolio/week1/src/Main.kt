@@ -5,7 +5,7 @@ import kotlin.math.sqrt
 import kotlin.system.exitProcess
 fun main(args: Array<String>) {
     if (args.size != 3) {
-        println("Error: Please enter 3 numbers")
+        println("Error: values for a, b, c required on command line")
         exitProcess(1)
     }
     val a = args[0].toFloat()
