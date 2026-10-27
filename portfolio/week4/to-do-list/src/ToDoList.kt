@@ -1,4 +1,4 @@
-// COMP2850 Portfolio: Week 4
+ // COMP2850 Portfolio: Week 4
 // ToDoList class
 
 import kotlinx.datetime.LocalDate
@@ -10,16 +10,24 @@ class ToDoList() {
     private val items = mutableListOf<ToDoItem>()
 
     val size get() = items.size
-    val notStarted get() = 0   // compute no. of items with NotStarted status
-    val inProgress get() = 0   // compute no. of items with InProgress status
-    val done get() = 0         // compute no. of items with Done status
-    val overdue get() = 0      // compute no. of overdue items
+    val notStarted get() = items.count{ x->x.status.name=="NotStarted"}   // compute no. of items with NotStarted status
+    val inProgress get() =  items.count{ x->x.status.name=="InProgress"}   // compute no. of items with InProgress status
+    val done get() =  items.count{ x->x.status.name=="Done"}       // compute no. of items with Done status
+    val overdue get() =  items.count{ x->x.isOverdue()}     // compute no. of overdue items
 
     constructor(filename: String): this() {
         load(filename)
     }
 
     fun load(filename: String) {
+        Path(filename).forEachLine{
+            var parts=it.split(':')
+            var due=LocalDate.parse(parts[0].trim())
+            var state=ItemStatus.valueOf(parts[1].trim())
+            var description=parts[2].trim()
+            var newItem=ToDoItem(due,state,description)
+            items.add(newItem)
+        }
         // Implement code to read To Do list from a file here
         // See data/to-do.csv for an example of the format
     }
@@ -35,20 +43,26 @@ class ToDoList() {
     fun add(vararg item: ToDoItem) = item.forEach { items.add(it) }
 
     fun deleteDone(): Boolean {
+        var oldSize=size
+        items.removeAll{it.status.name=="Done"}
         // Write code here to remove items with status of Done
         // Return true if any were removed, false if none were removed
+        if(oldSize>size){
+            return true
+        }
         return false
     }
 
     fun getItems(status: ItemStatus? = null): List<ToDoItem> {
         // Write code here to return a list of items with the matching
         // status, or a list of all items if status argument is null
-        return emptyList()
+        return status?.let{selectedStatus-> items.filter{it.status==selectedStatus}}?:items
+       
     }
 
     fun getItemsDueOn(date: LocalDate): List<ToDoItem> {
         // Write code here to return a list of items
         // that are due on the specified date
-        return emptyList()
+      return items.filter{it.dueDate==date}
     }
 }
